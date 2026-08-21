@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galaxia</title>
+<style>
+html,body{margin:0;background:#000;overflow:hidden;height:100%}
+canvas{display:block}
+.btn{position:absolute;top:15px;left:15px;color:#73fc18;font-family:monospace;background:#000;padding:8px;border:1px solid #73fc18;border-radius:8px}
+a{color:#73fc18;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="btn"><a href="/">← VOLVER</a></div>
+<canvas id="c"></canvas>
+<script>
+c=document.getElementById('c');x=c.getContext('2d');
+function R(){c.width=innerWidth;c.height=innerHeight}
+addEventListener('resize',R);R();
+S=[];for(i=0;i<2000;i++){d=Math.random()*380*Math.random();a=d*.18+Math.random()*6.28+S.length%3*2.09;S.push({r:d,a:a,v:.003+Math.random()*.004})}
+(function L(){
+x.fillStyle='rgba(0,0,0,.35)';x.fillRect(0,0,c.width,c.height);
+for(o of S){o.a+=o.v;X=c.width/2+Math.cos(o.a)*o.r;Y=c.height/2+Math.sin(o.a)*o.r;x.fillStyle=o.r<90?'#fff':'#73fc18';x.globalAlpha=1-o.r/500;x.beginPath();x.arc(X,Y,1.5,0,7);x.fill()}
+x.globalAlpha=1;g=x.createRadialGradient(c.width/2,c.height/2,0,c.width/2,c.height/2,90);g.addColorStop(0,'#b6ff6b');g.addColorStop(1,'#0000');x.fillStyle=g;x.beginPath();x.arc(c.width/2,c.height/2,90,0,7);x.fill();
+requestAnimationFrame(L)})();
+</script>
+</body>
+</html>
