@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Galaxia - Denver488</title>
+<style>
+  html,body{margin:0; background:#000; overflow:hidden; height:100%}
+  canvas{display:block}
+ .titulo{
+    position:absolute; top:20px; left:20px; color:rgba(115,252,24,0.8);
+    font-family:monospace; font-size:14px; letter-spacing:2px;
+    background:rgba(0,0,0,0.5); padding:10px 14px; border-radius:8px;
+    border:1px solid rgba(115,252,24,0.2)
+  }
+  a{color:rgb(115,252,24); text-decoration:none}
+</style>
+</head>
+<body>
+<div class="titulo"><a href="/">← VOLVER</a><br>GALAXIA DENVER488<br>Mueve el dedo / mouse</div>
+<canvas id="c"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let w, h, cx, cy;
+function resize(){ w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight; cx=w/2; cy=h/2; }
+window.addEventListener('resize', resize); resize();
+
+let stars = [];
+const NUM = 2500;
+for(let i=0;i<NUM;i++){
+  let r = Math.random() * Math.pow(Math.random(), 2) * 500;
+  let angle = r * 0.2 + (Math.random()*6.28);
+  let branch = Math.floor(Math.random()*3);
+  angle += branch * (Math.PI*2/3) + r*0.01;
+  stars.push({
+    r: r,
+    angle: angle,
+    size: Math.random()*1.8,
+    speed: 0.002 + Math.random()*0.004,
+    color: Math.random()>0.8? '#73fc18' : Math.random()>0.5? '#ffffff' : '#88ccff'
+  });
+}
+
+let mouseX = 0, mouseY = 0;
+window.addEventListener('mousemove', e=>{ mouseX=(e.clientX-cx)/cx; mouseY=(e.clientY-cy)/cy; });
+window.addEventListener('touchmove', e=>{ mouseX=(e.touches[0].clientX-cx)/cx; mouseY=(e.touches[0].clientY-cy)/cy; });
+
+function draw(){
+  ctx.fillStyle='rgba(0,0,0,0.25)';
+  ctx.fillRect(0,0,w,h);
+
+  stars.forEach(s=>{
+    s.angle += s.speed;
+    let x = cx + Math.cos(s.angle) * s.r + mouseX * s.r * 0.2;
+    let y = cy + Math.sin(s.angle) * s.r + mouseY * s.r * 0.2;
+
+    let dist = s.r / 500;
+    ctx.globalAlpha = 1 - dist*0.6;
+    ctx.fillStyle = s.color;
+    ctx.shadowBlur = s.r < 100? 10 : 0;
+    ctx.shadowColor = s.color;
+    ctx.beginPath();
+    ctx.arc(x, y, s.size, 0, Math.PI*2);
+    ctx.fill();
+  });
+
+  // núcleo brillante
+  let grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 120);
+  grad.addColorStop(0, 'rgba(200,255,150,0.8)');
+  grad.addColorStop(0.2, 'rgba(115,252,24,0.3)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 120, 0, Math.PI*2);
+  ctx.fill();
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
